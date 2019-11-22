@@ -1,7 +1,7 @@
 import sqlite3
 from flask import Flask, render_template, g
 
-PATH = 'db/jobs.sqllite'
+PATH = 'db/jobs.sqlite'
 
 app = Flask(__name__)
 
@@ -18,15 +18,15 @@ def execute_sql(sql, values=(), commit=False, single=False):
     connection = open_connection()
     cursor = connection.execute(sql, values)
     if commit == True:
-        results == connection.commit()
+        results = connection.commit()
     else:
-        results = cursor.fetchnone() if single else cursor.fetchall()
+        results = cursor.fetchone() if single else cursor.fetchall()
     
     cursor.close()
     return results
 
-
-def close_connections(exception):
+@app.teardown_appcontext
+def close_connection(exception):
     connection = getattr(g, '_connection', None)
     if connection is not None:
         connection.close()
